@@ -58,14 +58,13 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
 
         // WSL with systemd will set the contents of this file to "wsl"
         // Avoid showing the container module in that case
-        // Honor the contents of this file if "docker" or "lxc" and not running in podman or wsl
+        // Honor the contents of this file if "docker" and not running in podman or wsl
         let systemd_path = context_path(context, "/run/systemd/container");
         if let Ok(s) = utils::read_file(systemd_path) {
             match s.trim() {
                 "docker" => return Some("Docker".into()),
-                "lxc" => return Some("LXC".into()),
                 "wsl" => (),
-                _ => return Some("Systemd".into()),
+                _ => return Some(s.trim().into()),
             }
         }
 
